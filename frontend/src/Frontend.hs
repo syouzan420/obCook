@@ -12,6 +12,7 @@ import Obelisk.Generated.Static (static)
 
 import Reflex.Dom.Core 
   ( text, dynText, el, elClass, elClass', elAttr, blank , divClass, (=:) 
+  , holdDyn, never, accumDyn
   , DomBuilder, Prerender, PerformEvent, TriggerEvent
   , PostBuild, MonadHold , Performable
   )
@@ -55,12 +56,14 @@ frontendBody ::
   , TriggerEvent t m
   ) => m ()
 frontendBody = do 
-  el "h1" $ text "cook"
+  el "h1" $ text "Button Test"
   el "p" $ text $ T.pack commonStuff
   elSpace
   elChara
   elSpace
-  elClass "div" "butn" $ elChoice (Node T.empty testNodes) 
+  elClass "div" "butn" $ do
+    evCoice <- elChoice never (Node T.empty testNodes) 
+    dynText =<< accumDyn (\a b -> a <> "..." <> b) T.empty evCoice
 
 
 testNodes :: Forest T.Text
