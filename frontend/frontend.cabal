@@ -30,6 +30,7 @@ library
                , time
                , semigroupoids
                , bytestring
+               , containers
   exposed-modules:
     Frontend
   other-modules:

@@ -1,44 +1,56 @@
-module CWidget (elChara, elSpace, buttonClass) where
+module CWidget ( elChara, elSpace, evElButton, evElButtonH, mkHidden
+               , evElNumberPad, dyElTimer, dyElCharaAnime) where
 
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Fix (MonadFix)
 import qualified Data.Text as T
+import qualified Data.Map.Strict as Map
 
 import Obelisk.Generated.Static (static)
 
 import Reflex.Dom.Core 
   ( text, dynText, el, elAttr, divClass, elAttr', blank
-  , (=:), leftmost, accumDyn, elDynAttr, prerender 
-  , holdDyn, domEvent, zipDyn, zipDynWith, current, gate 
-  , tickLossyFromPostBuildTime, widgetHold_, toggle
-  , DomBuilder, Prerender, PerformEvent, TriggerEvent
+  , (=:), leftmost, elDynAttr, elDynAttr' ,holdDyn, domEvent
+  , current, gate, tickLossyFromPostBuildTime
+  , DomBuilder, PerformEvent, TriggerEvent
   , PostBuild, Event, EventName(Click), MonadHold ,Dynamic
   , Performable, TickInfo(..)
   )
 
-data Button = ButtonNumber T.Text | ButtonClear 
+mkHidden :: Bool -> Map.Map T.Text T.Text
+mkHidden False = "hidden" =: ""
+mkHidden True = mempty
 
 elSpace :: DomBuilder t m => m ()
 elSpace = el "p" $ text ""
 
-buttonClass :: DomBuilder t m => T.Text -> T.Text -> m (Event t ())
-buttonClass c s = do
+evElButton :: DomBuilder t m => T.Text -> T.Text -> m (Event t ())
+evElButton c s = do
   (e, _) <- elAttr' "button" ("type" =: "button" <> "class" =: c) $ text s
   return $ domEvent Click e
 
-numberPad :: DomBuilder t m => Int -> m (Event t T.Text)
-numberPad i = do
-  b1 <- ("1" <$) <$> numberButton "1"
-  b2 <- ("2" <$) <$> numberButton "2"
-  b3 <- ("3" <$) <$> numberButton "3"
-  b4 <- ("4" <$) <$> numberButton "4"
-  b5 <- ("5" <$) <$> numberButton "5"
-  return $ leftmost (take i [b1,b2,b3,b4,b5])
+evElButtonH ::
+  ( DomBuilder t m
+  , PostBuild t m
+  ) => Dynamic t Bool -> T.Text -> T.Text -> m (Event t ())
+evElButtonH dyB c s = do
+  (e, _) <- elDynAttr' "button" dyBHide $ text s
+  return $ domEvent Click e
+  where mkHidden' False = "hidden" =: "" <> otherAttr
+        mkHidden' True = otherAttr
+        dyBHide = mkHidden' <$> dyB
+        otherAttr = "type" =: "button" <> "class" =: c
+
+evElNumberPad :: DomBuilder t m => Int -> m (Event t T.Text)
+evElNumberPad i = do
+  divClass "gr" $ do
+    evts <- mapM (\n -> (toText n <$) <$> evElNumberButton (toText n)) [1..i]
+    return $ leftmost evts 
   where
-    numberButton = buttonClass "pad" 
+    evElNumberButton = evElButton "pad" 
+    toText = T.pack . show
 
-
-elTimer :: 
+dyElTimer :: 
   ( DomBuilder t m
   , MonadFix m
   , MonadHold t m
@@ -47,14 +59,14 @@ elTimer ::
   , PostBuild t m
   , TriggerEvent t m
   ) => Dynamic t Bool -> m (Dynamic t T.Text)
-elTimer b = do
+dyElTimer b = do
   evTime <- tickLossyFromPostBuildTime 1 
   let beBool = current b 
   let evNTime = gate beBool evTime
   let evTimeText = T.pack . show . (+1) . _tickInfo_n <$> evNTime
   holdDyn "start" evTimeText 
   
-elCharaAnime :: 
+dyElCharaAnime :: 
   ( DomBuilder t m
   , MonadFix m
   , MonadHold t m
@@ -63,14 +75,12 @@ elCharaAnime ::
   , PostBuild t m
   , TriggerEvent t m
   ) => Dynamic t Bool -> m (Dynamic t T.Text)
-elCharaAnime isAnsNotCorrect = do
-  dyTime <- elTimer isAnsNotCorrect 
+dyElCharaAnime dyBool = do
+  dyTime <- dyElTimer dyBool 
   let dToggle = fmap (\tx -> (tx/="start") &&
                      (rem ((read . T.unpack) tx) 2==(0::Int))) dyTime
   let 
     dNotToggle = not <$> dToggle
-    mkHidden False = "hidden" =: ""
-    mkHidden True = mempty
     dHide1 = mkHidden <$> dToggle
     dHide2 = mkHidden <$> dNotToggle
   el "p" $ text ""

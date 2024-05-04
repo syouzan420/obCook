@@ -5,23 +5,20 @@ import Common.Route (FrontendRoute (..))
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Fix (MonadFix)
 import qualified Data.Text as T
+import Data.Tree (Tree(..),Forest)
 import Obelisk.Frontend (Frontend (..))
 import Obelisk.Route (R)
 import Obelisk.Generated.Static (static)
 
 import Reflex.Dom.Core 
-  ( text, el, elAttr, blank , divClass, (=:) 
+  ( text, dynText, el, elClass, elClass', elAttr, blank , divClass, (=:) 
   , DomBuilder, Prerender, PerformEvent, TriggerEvent
   , PostBuild, MonadHold , Performable
   )
 
 import CWidget (elChara, elSpace)
 
-import Buttons (elButtons)
-
-import Define
-
-data Button = ButtonNumber T.Text | ButtonClear 
+import Buttons (elChoice)
 
 
 frontend :: Frontend (R FrontendRoute)
@@ -59,14 +56,12 @@ frontendBody ::
   ) => m ()
 frontendBody = do 
   el "h1" $ text "cook"
-
   el "p" $ text $ T.pack commonStuff
-
   elSpace
---  elAttr "div" ("display" =: "flex") $ do
   elChara
   elSpace
-  divClass "butn" $ do
-    _ <- elButtons ["a","b","c","d","e","f","g"]
-    blank
+  elClass "div" "butn" $ elChoice (Node T.empty testNodes) 
 
+
+testNodes :: Forest T.Text
+testNodes = [Node "a" [Node "d" [],Node "e" [Node "h" []]],Node "b" [Node "f" [Node "g" []]],Node "c" []]
