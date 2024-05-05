@@ -21,8 +21,7 @@ evElButtonsH dyB trs =
   mapM (\tr@(Node tx _) -> (tr <$) <$> evElButtonH dyB "pad2" tx) trs <&> leftmost 
 
 elChoice ::
-  ( DomBuilder t m , PostBuild t m , MonadHold t m
-  , MonadFix m
+  ( DomBuilder t m , PostBuild t m , MonadHold t m , MonadFix m
   ) => Event t T.Text -> Tree T.Text -> m (Event t T.Text) 
 elChoice e (Node _ []) = pure e 
 elChoice _ (Node _ frs) = mdo
@@ -31,7 +30,6 @@ elChoice _ (Node _ frs) = mdo
   let evT = fmap (\(Node tx _) -> tx) evBH
   ev <- updated <$> widgetHold ((T.empty <$) <$> now) (elChoice evT <$> evBH)
   switchHold evT ev
-
 
 {-
 elChoice ::
