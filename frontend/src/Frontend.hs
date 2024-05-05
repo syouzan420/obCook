@@ -2,7 +2,7 @@ module Frontend where
 
 import Common.Api (commonStuff)
 import Common.Route (FrontendRoute (..))
-import Control.Monad.IO.Class (MonadIO)
+--import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Fix (MonadFix)
 import qualified Data.Text as T
 import Data.Tree (Tree(..),Forest)
@@ -11,10 +11,10 @@ import Obelisk.Route (R)
 import Obelisk.Generated.Static (static)
 
 import Reflex.Dom.Core 
-  ( text, dynText, el, elClass, elClass', elAttr, blank , divClass, (=:) 
-  , holdDyn, never, accumDyn
-  , DomBuilder, Prerender, PerformEvent, TriggerEvent
-  , PostBuild, MonadHold , Performable
+  ( text, dynText, el, elClass, elAttr, blank , (=:) 
+  , never, accumDyn
+  , DomBuilder, MonadHold, PostBuild
+--  , Prerender, Performable, PerformEvent, TriggerEvent
   )
 
 import CWidget (elChara, elSpace)
@@ -49,11 +49,11 @@ frontendBody ::
   ( DomBuilder t m
   , MonadFix m
   , MonadHold t m
-  , MonadIO (Performable m)
-  , PerformEvent t m
   , PostBuild t m
-  , Prerender t m
-  , TriggerEvent t m
+--  , MonadIO (Performable m)
+--  , PerformEvent t m
+--  , Prerender t m
+--  , TriggerEvent t m
   ) => m ()
 frontendBody = do 
   el "h1" $ text "Button Test"

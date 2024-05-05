@@ -1,18 +1,1 @@
-/home/yokop/Documents/haskell/obelisk/obCook/frontend/src/Frontend.hs:(13,1)-(18,3): warning: [-Wunused-imports]
-    The import of ‘divClass, elClass', holdDyn’
-    from module ‘Reflex.Dom.Core’ is redundant
-   |
-13 | import Reflex.Dom.Core 
-   | ^^^^^^^^^^^^^^^^^^^^^^^...
-/home/yokop/Documents/haskell/obelisk/obCook/frontend/src/Frontend.hs:(48,1)-(57,11): warning: [-Wredundant-constraints]
-    • Redundant constraints: (MonadIO (Performable m),
-                              PerformEvent t m, Prerender t m, TriggerEvent t m)
-    • In the type signature for:
-           frontendBody :: forall t (m :: * -> *).
-                           (DomBuilder t m, MonadFix m, MonadHold t m,
-                            MonadIO (Performable m), PerformEvent t m, PostBuild t m,
-                            Prerender t m, TriggerEvent t m) =>
-                           m ()
-   |
-48 | frontendBody :: 
-   | ^^^^^^^^^^^^^^^^...
+All good (7 modules, at 09:15:30)
