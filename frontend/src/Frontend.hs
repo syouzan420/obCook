@@ -20,6 +20,7 @@ import Reflex.Dom.Core
 import CWidget (elChara, elSpace)
 
 import Buttons (elChoice)
+import CookTree (cookTree)
 
 
 frontend :: Frontend (R FrontendRoute)
@@ -62,7 +63,7 @@ frontendBody = do
   elChara
   elSpace
   elClass "div" "butn" $ do
-    evCoice <- elChoice never (Node T.empty testNodes) 
+    evCoice <- elChoice never (Node T.empty cookTree) 
     dynText =<< accumDyn (\a b -> a <> "..." <> b) T.empty evCoice
 
 
