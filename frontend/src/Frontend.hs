@@ -63,7 +63,7 @@ frontendBody = do
   elChara
   elSpace
   elClass "div" "butn" $ do
-    evCoice <- elChoice never (Node T.empty cookTree) 
+    evCoice <- elChoice never cookTree 
     dynText =<< accumDyn (\a b -> a <> "..." <> b) T.empty evCoice
 
 
