@@ -19,7 +19,7 @@ lstToTree frs@((Node tx fr):trs) (x:xs) =
    case x of
     "(" -> lstToTree (Node "(" [] :frs) xs 
     ")" -> let (Node tx' fr':trs') = trs 
-            in if null fr' then lstToTree [Node tx' fr] xs
+            in if null fr' then lstToTree (Node tx' fr:trs) xs
                            else let ((Node t _):tl) = fr'
                                  in lstToTree (Node tx' (Node t fr:tl):trs') xs 
     t -> lstToTree (Node tx (Node t []:fr):trs) xs 
