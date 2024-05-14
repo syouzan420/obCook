@@ -8,39 +8,42 @@ import File (fileRead, fileWrite)
 data Tree a = Node a [Tree a] deriving (Eq,Show)
 type Forest a = [Tree a]
 
+takeForest :: Tree a -> Forest a
+takeForest (Node _ fr) = fr
+
 --instance Show a => (Show (Tree a)) where
 --  show (Node t fr) = show t<>" ["<>concatMap show fr<>"] " 
 
-lstToTree :: Forest T.Text -> [T.Text] -> Tree T.Text
-lstToTree [] [] = Node T.empty [] 
-lstToTree [] (x:xs) = lstToTree [Node x []] xs
-lstToTree frs [] = head frs
-lstToTree frs@((Node tx fr):trs) (x:xs) =
-   case x of
-    "(" -> lstToTree (Node "(" [] :frs) xs 
-    ")" -> let (Node tx' fr':trs') = trs 
-            in if null fr' then lstToTree (Node tx' fr:trs) xs
-                           else let ((Node t _):tl) = fr'
-                                 in lstToTree (Node tx' (Node t fr:tl):trs') xs 
-    t -> lstToTree (Node tx (Node t []:fr):trs) xs 
-
---lstToTree :: Tree T.Text -> [T.Text] -> Tree T.Text
---lstToTree (Node t []) [] = Node t [] 
---lstToTree (Node t []) xs = lstToTree (Node t [Node t []]) xs
---lstToTree tr [] = tr 
---lstToTree (Node tex frs@((Node tx fr):trs)) (x:xs) =
+--lstToTree :: Forest T.Text -> [T.Text] -> Tree T.Text
+--lstToTree [] [] = Node T.empty [] 
+--lstToTree [] (x:xs) = lstToTree [Node x []] xs
+--lstToTree frs [] = head frs
+--lstToTree frs@((Node tx fr):trs) (x:xs) =
 --   case x of
---    "(" -> lstToTree (Node tex (Node "(" [] :frs)) xs 
---    ")" -> let (Node tx' fs':trs') = trs 
---            in if null fs' then lstToTree (Node tex [Node tx' fr]) xs
---             else let ((Node t _):tl) = fs'
---                   in lstToTree (Node tex (Node tx' (Node t fr:tl):trs')) xs 
---    t -> lstToTree (Node tex (Node tx (Node t []:fr):trs)) xs 
+--    "(" -> lstToTree (Node "(" [] :frs) xs 
+--    ")" -> let (Node tx' fr':trs') = trs 
+--            in if null fr' then lstToTree (Node tx' fr:trs) xs
+--                           else let ((Node t _):tl) = fr'
+--                                 in lstToTree (Node tx' (Node t fr:tl):trs') xs 
+--    t -> lstToTree (Node tx (Node t []:fr):trs) xs 
+
+lstToTree :: [T.Text] -> Tree T.Text
+lstToTree = head . foldl ltot [Node "root" []] 
+
+ltot :: Forest T.Text -> T.Text -> Forest T.Text
+ltot frs@((Node tx fr):trs) x = case x of  
+  "(" -> Node "(" [] :frs
+  ")" -> let ((Node tx' fr'):trs') = trs
+          in if null fr' then Node tx' fr :trs  
+                         else let ((Node tx'' _):trs'') = fr' 
+                               in Node tx' (Node tx'' fr :trs'') :trs' 
+  t   -> Node tx (Node t [] :fr) :trs
+
 
 convC :: IO ()  
 convC = do
   ws <- T.words . addSpace <$> fileRead cookFile
-  let tr = lstToTree [Node "root" []] ws
+  let tr = lstToTree ws
   let frStr = show tr
   putStrLn frStr
   let mainText = T.pack frStr 
