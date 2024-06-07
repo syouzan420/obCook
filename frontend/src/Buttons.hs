@@ -31,18 +31,3 @@ elChoice _ (Node _ frs) = mdo
   ev <- updated <$> widgetHold ((T.empty <$) <$> now) (elChoice evT <$> evBH)
   switchHold evT ev
 
-{-
-elChoice ::
-  ( DomBuilder t m
-  , PostBuild t m
-  , MonadHold t m
-  , MonadFix m
-  ) => Tree T.Text -> m () 
-elChoice (Node a []) = do
-  el "p" $ text a
-elChoice (Node _ frs) = mdo
-  dyBool <- toggle True evBH 
-  evBH <- evElButtonsH dyBool frs
-  widgetHold_ elSpace (fmap elChoice evBH)
-  pure () 
--}

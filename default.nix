@@ -35,6 +35,6 @@ project ./. ({ pkgs, ... }: {
       name = "0.1";
     };
   };
-  ios.bundleIdentifier = "rog.yokop.rekisi";
-  ios.bundleName = "Rekisi";
+  ios.bundleIdentifier = "org.yokop.cook";
+  ios.bundleName = "Cook";
 })

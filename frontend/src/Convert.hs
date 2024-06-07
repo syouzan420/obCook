@@ -14,19 +14,6 @@ takeForest (Node _ fr) = fr
 --instance Show a => (Show (Tree a)) where
 --  show (Node t fr) = show t<>" ["<>concatMap show fr<>"] " 
 
---lstToTree :: Forest T.Text -> [T.Text] -> Tree T.Text
---lstToTree [] [] = Node T.empty [] 
---lstToTree [] (x:xs) = lstToTree [Node x []] xs
---lstToTree frs [] = head frs
---lstToTree frs@((Node tx fr):trs) (x:xs) =
---   case x of
---    "(" -> lstToTree (Node "(" [] :frs) xs 
---    ")" -> let (Node tx' fr':trs') = trs 
---            in if null fr' then lstToTree (Node tx' fr:trs) xs
---                           else let ((Node t _):tl) = fr'
---                                 in lstToTree (Node tx' (Node t fr:tl):trs') xs 
---    t -> lstToTree (Node tx (Node t []:fr):trs) xs 
-
 lstToTree :: [T.Text] -> Tree T.Text
 lstToTree = head . foldl ltot [Node "root" []] 
 
